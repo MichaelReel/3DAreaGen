@@ -26,9 +26,8 @@ func _init(room_size, gen_seed = OS.get_time().second):
 func draw_random_boxes(tile):
 	# randomize()
 	for i in 1000:
-		print (i)
 		var box = get_random_box()
-		if not box_collides(self.boxes, box):
+		if not box_collides(self.boxes, box) and not box.has_no_area() and map_bounds.encloses(box):
 			self.boxes.append(box)
 			draw_simple_tile_box(box, tile)
 
@@ -45,13 +44,14 @@ func get_random_box():
 	else:
 		height += rectangularity
 
-	print("map_bounds: ", self.map_bounds, ", width: ", width, ", height: ", height)
+	if int((self.map_bounds.size.x - width) / 2) == 0 or int((self.map_bounds.size.y - height) / 2) == 0:
+		# print ("Bad width or heigth! Width: ", width, ", height: ", height)
+		return Rect2()
 	
 	var x = randi() % int((self.map_bounds.size.x - width) / 2) * 2 + 1
 	var y = randi() % int((self.map_bounds.size.y - height) / 2) * 2 + 1
 
-	var box = Rect2(x, y, width, height)
-	return box
+	return Rect2(x, y, width, height)
 
 func box_collides(boxes, box):
 	for b in boxes:
